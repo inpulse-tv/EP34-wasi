@@ -1,0 +1,29 @@
+- name: Update all worker nodes
+  hosts: all
+
+  tasks:
+    # - name: Print all available facts
+    #   ansible.builtin.debug:
+    #     var: ansible_facts
+
+    - name: Enable wasm shim in containerd
+      ansible.builtin.lineinfile:
+        path: /etc/containerd/config.toml
+        state: present
+        insertafter: 'containerd\.runtimes'
+        line: "        [plugins.\"io.containerd.grpc.v1.cri\".containerd.runtimes.spin]\n          runtime_type = \"io.containerd.spin.v1\""
+      become: True
+
+    - name: Donwload containerd wasm shims
+      ansible.builtin.unarchive:
+        src: https://github.com/deislabs/containerd-wasm-shims/releases/download/v0.3.3/containerd-wasm-shims-v1-linux-{{ ansible_facts["architecture"] }}.tar.gz
+        dest: /usr/local/bin
+        remote_src: yes
+      become: True
+
+    - name: Restart service containerd
+      ansible.builtin.systemd:
+        state: restarted
+        daemon_reload: true
+        name: containerd
+      become: True

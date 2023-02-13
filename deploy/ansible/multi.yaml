@@ -1,0 +1,30 @@
+- name: Update external worker nodes
+  hosts: all
+
+  tasks:
+    # - name: Print all available facts
+    #   ansible.builtin.debug:
+    #     var: ansible_facts
+
+    - name: donwload multicloud-init
+      ansible.builtin.get_url:
+        url: https://scwcontainermulticloud.s3.fr-par.scw.cloud/multicloud-init.sh
+        dest: /home/ubuntu/multicloud-init.sh
+        mode: "0555"
+
+    - name:
+      ansible.builtin.replace:
+        path: /home/ubuntu/multicloud-init.sh
+        regexp: amd64
+        replace: arm64
+      when: ansible_facts['architecture'] == "aarch64"
+
+    - name: execute multicloud init
+      ansible.builtin.shell: /home/ubuntu/multicloud-init.sh -p $POOL_ID -r $REGION -t $SCW_SECRET_KEY
+      environment:
+        POOL_ID: "{{ pool_id }}"
+        REGION: fr-par
+        SCW_SECRET_KEY: "{{ scw_secret_key }}"
+      become: True
+      register: command_result
+      no_log: True

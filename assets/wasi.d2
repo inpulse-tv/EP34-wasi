@@ -1,0 +1,21 @@
+systeme: {
+  binaire: "binaire" {
+    IO
+    file-io
+    network-io
+    IO -- file-io
+    IO -- network-io
+  }
+  wasm_module: "WASM Module"
+  wasm_module -> wasm_runtime
+  wasm_runtime: "WASM runtime"
+  wasm_runtime -> binaire.IO: "capability-based security"
+  wasm_runtime -> binaire: "portabilité"
+}
+
+cpu: {
+  shape: image
+  icon: https://icons.terrastruct.com/tech%2F014-cpu.svg
+}
+
+systeme.binaire -> cpu

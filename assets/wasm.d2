@@ -1,0 +1,28 @@
+navigateur: {
+  javascript_engine: "Javascript Engine" {
+    js_source: "Source Javascript" {
+      shape: page
+    }
+    js_bytecode: "Javascript Bytecode" {
+      shape: page
+    }
+    binaire: "binaire"
+    js_source -> js_bytecode: "parser"
+    js_bytecode -> binaire: "interpréter"
+    wasm_module: "WASM Module"
+    wasm_module -- js_source
+    wasm_module -> binaire
+  }
+}
+
+cpu: {
+  shape: image
+  icon: https://icons.terrastruct.com/tech%2F014-cpu.svg
+}
+
+navigateur.javascript_engine.binaire -> cpu
+
+serveur
+
+serveur -> navigateur.javascript_engine.js_source
+serveur -> navigateur.javascript_engine.wasm_module

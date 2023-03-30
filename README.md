@@ -46,44 +46,45 @@ $ wasmtime --dir="." file_copy.wasm /etc/passwd file.copy.txt
 ``` 
 > ❌ `opening input /etc/passwd: failed to find a pre-opened file descriptor through which "/etc/passwd" could be opened`
 
-## Secure & lightweight microservice with a database backend
+## Microservice sécurisé et léger avec une base de données
 
-In this repo, we demonstrate a microservice written in Rust, and connected to a MySQL database. It supports CRUD operations on a database table via a HTTP service interface. The microservice is compiled into WebAssembly (Wasm) and runs in the WasmEdge Runtime, which is a secure and lightweight alternative to natively compiled Rust apps in Linux containers. The WasmEdge Runtime can be managed and orchestrated by container tools such as the Docker, Podman, as well as almost all flavors of Kubernetes.
+Dans cette section, nous présentons un microservice écrit en Rust, connecté à une base de données MySQL. Il prend en charge les opérations CRUD sur une table de base de données via une interface de service HTTP. Le microservice est compilé en WebAssembly (Wasm) et s'exécute dans le runtime WasmEdge, qui est une alternative sécurisée et légère aux applications Rust compilées nativement dans des conteneurs Linux. 
 
-### Quickstart with Docker
+Le runtime WasmEdge peut être géré et orchestré par des outils de conteneur tels que Docker, Podman, ainsi que presque toutes les variantes de Kubernetes.
 
-The easiest way to get started is to use a version of Docker Desktop or Docker CLI with Wasm support.
+### Démarrage rapide avec Docker
+
+Le moyen le plus simple de commencer est d'utiliser une version de Docker Desktop ou Docker CLI avec prise en charge de Wasm.
 
 🐋  [Install Docker Desktop + Wasm (Beta)](https://docs.docker.com/desktop/wasm/)
 
 🐋  [Install Docker CLI + Wasm](https://github.com/chris-crone/wasm-day-na-22/tree/main/server)
 
-Then, you just need to type one command.
+Ensuite, vous n'avez besoin que de taper une commande.
 
 ```bash
 docker compose up
 ```
+Cela va construire le code source Rust, exécuter le serveur Wasm et démarrer une base de données MySQL. Il lance également une interface web STATIQUE basique (disponible à l'adresse http://localhost:8090)
 
-This will build the Rust source code, run the Wasm server, and startup a MySQL backing database. It also starts a basic STATIC web interface (available at http://localhost:8090). See the [Dockerfile](Dockerfile) and [docker-compose.yml](docker-compose.yml) files. You can jump directly to the [CRUD tests](#crud-tests) section to interact with the web service.
+Consultez les fichiers Dockerfile et docker-compose.yml pour plus d'informations 
 
 ### CRUD tests
 
-Open another terminal, and you can use the `curl` command to interact with the web service.
+Avec n'importe quel client http vous pouvez interragir avec les différents endpoint. Ci-dessous les exemples avec `curl`
 
-When the microservice receives a GET request to the `/init` endpoint, it would initialize the database with the `orders` table.
+Lorsque le microservice reçoit une demande GET vers l'endpoint /init, il initialise la base de données avec la table des commandes.
 
 ```bash
 curl http://localhost:8080/init
 ```
 
-When the microservice receives a POST request to the `/create_order` endpoint, it would extract the JSON data from the POST body and insert an `Order` record into the database table.
-For multiple records, use the `/create_orders` endpoint and POST a JSON array of `Order` objects.
+Lorsque le microservice reçoit une demande POST vers l'endpoint /create_order, il extrait les données JSON du corps de la requête POST et insère un enregistrement de commande dans la table de la base de données. Pour plusieurs enregistrements, utilisez l'endpoint /create_orders et envoyez un tableau JSON d'objets de commande.
 
 ```bash
 curl http://localhost:8080/create_orders -X POST -d @orders.json
 ```
-
-When the microservice receives a GET request to the `/orders` endpoint, it would get all rows from the `orders` table and return the result set in a JSON array in the HTTP response.
+Lorsque le microservice reçoit une demande GET vers l'endpoint /orders, il récupère toutes les lignes de la table des commandes et renvoie le résultat sous forme de tableau JSON dans la réponse HTTP.
 
 ```bash
 curl http://localhost:8080/orders

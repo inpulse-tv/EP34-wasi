@@ -1,6 +1,6 @@
 # EP34-wasi
 
-Ce dépôt contient les ressources relatives à l'épisode 34 de inpulse.tv 👉 
+Ce dépôt contient les ressources relatives à l'épisode 34 de inpulse.tv 👉 https://youtu.be/_sc4uW2v7t0
 
 ## Capability-based security
 
